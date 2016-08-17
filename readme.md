@@ -1,7 +1,7 @@
 **** alter-evic
 
 *** Bug
-There is currently a bug which will cause 
+There is currently a bug which will cause a virtual 'short' and continually power the coil. TAKE EXTREME CARE
 
 An alternate firmware for Evic VTC-Mini devices.
 
