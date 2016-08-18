@@ -1,0 +1,64 @@
+[main]
+
+High level structures
+ User defined data
+  mode
+   vv
+   vw
+   bp
+   tc
+   
+  settings
+   tcr value
+   flip when firing?
+
+ Realtime Data
+  state
+   firing, rtc, firing time, idle time
+  coil
+   amps, volts, watts, resistance, baseResistance, temperature
+  device
+   amps, volts, watts, temperature
+  battery
+   amps, volts, loadVolts, watts, 
+
+ Callbacks
+  controls
+   left, right, fire
+  controls combinations?
+ 
+ Firing Sequence
+  vv
+   check if the atomizer reports no errors
+   check if v isn't too high for regulator
+   check if v wouldn't raise output over watts limit
+   fire at selected volts
+    break if FIRE is released
+    break if timer = 10
+  vw
+   check if atomizer reports no errors
+   check if w isn't over limit
+   check if v to get w isn't too high for regulator
+   fire at calculated volts
+    break if FIRE is released
+    break if fire > 10
+  bp
+   check if atomizer reports no errors
+   check if v wouldn't raise output over watts limit
+   fire at battery volts
+    break if FIRE is released
+    break if timer > 10
+  tc
+   check if atomizer reports no errors
+   calc coil temperature
+   calc PID algorithm
+   check if pid_v isn't over regulator limit
+   check if w isn't over limit
+   fire at pid_v
+    break if FIRE is released
+    break if timer > 10
+
+  common:
+   check atomizer errors
+   check if settings are safe to use
+    wattage, voltage,
