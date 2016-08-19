@@ -6,11 +6,14 @@
 struct Settings {
 	int mode;
 	int maxWatts;
+	// mW is equal to batPercent * 1000
+	// at 100%, 100W
+	// at 70%, 70w
+	// at 60%, 60w
 	float tcrValue;
 
-	int targetTemp;
-	int targetVolts;
-	int targetWatts;
+	uint16_t tT;
+	uint8_t tW;
 
 	int lockRes;
 	int flip;
@@ -22,8 +25,10 @@ struct Settings {
 struct State {
 	int firing;
 	// something rtc?
-	int fireTimer;
-	int idleTimer;
+	uint16_t fireTimer;
+	uint16_t idleTimer;
+	uint32_t fireTotal;
+	uint32_t puffTotal;
 };
 
 struct Controls {
@@ -50,15 +55,17 @@ struct Battery {
 	int percent;
 };
 
-struct Context {
+typedef struct {
 	struct Settings settings;
 	struct State state;
 	Atomizer_Info_t atomizer;
 	struct Device device;
 	struct Coil coil;
 	struct Battery battery;
-};
+} Context;
 
-struct Context collectData(struct Context ctx);
+void collectData();
+void incrementTime();
+void sleep();
 
 #endif

@@ -1,10 +1,10 @@
 #ifndef COIL_H
 #define COIL_H
 
-void checkFire(struct Context ctx);
+int checkFire();
 int wattsToVolts(int watts);
-int readCoilTemp(struct Context ctx);
+float readCoilTemp();
 int calcPID(int temp);
-void fireVolts(int volts);
+void fire();
 
 #endif
