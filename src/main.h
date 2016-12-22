@@ -1,46 +1,40 @@
 #include <Atomizer.h>
+#include <stdbool.h>
 
 #ifndef MAIN_H
 #define MAIN_H
 
 struct Settings {
-	int mode;
-	int maxWatts;
-	// mW is equal to batPercent * 1000
-	// at 100%, 100W
-	// at 70%, 70w
-	// at 60%, 60w
+	int mode; // 0:settings, 1:variable wattage, 2:bypass, 3:temp control
+	int maxCtrlWatts;
+	int maxWatts; // batPercent * 900 [100%:90w, 50%:45w]
+	int minTemp;
+	int maxTemp;
 	float tcrValue;
 
-	uint16_t tT;
-	uint8_t tW;
+	int tT; // target temperature
+	int tW; // target wattage
+	int bW; // bypass wattage
 
-	int lockRes;
-	int flip;
-	int stealth;
-	int lock;
+	bool lockRes;
+	bool flip;
+	bool stealth;
+	bool lock;
 	int timeout;
 };
 
 struct State {
-	int firing;
-	// something rtc?
+	bool firing;
+	Atomizer_Error_t error;
+	// something rtc?; unixtime!
 	uint16_t fireTimer;
 	uint16_t idleTimer;
 	uint32_t fireTotal;
 	uint32_t puffTotal;
 };
 
-struct Controls {
-	// button combos?
-};
-
 struct Device {
-	int amps;
-	int volts;
-	int watts;
 	int temp;
-	struct Controls controls;
 };
 
 struct Coil {
@@ -56,9 +50,9 @@ struct Battery {
 };
 
 typedef struct {
+	Atomizer_Info_t atomizer;
 	struct Settings settings;
 	struct State state;
-	Atomizer_Info_t atomizer;
 	struct Device device;
 	struct Coil coil;
 	struct Battery battery;

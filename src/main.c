@@ -6,6 +6,7 @@
 #include "control.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <M451Series.h>
 #include <Atomizer.h>
 #include <Button.h>
@@ -17,42 +18,48 @@
 #define LEFT 2
 #define FPS 30
 
-// all amps, watts, volts, and ohms are in /1 form.
-// ie: 4 = 400mV, 400mA, 400mO, 400mW
-
-// 400 == 0.4V, 0.4A, 0.4O, 0.4W
-
-// mode: 0-settings, 1-vw, 2-bp, 3-tc
-
-// load tcr curves
-
 volatile Context ctx;
 
 // Main
 int main() {
 	// initial settings, will change to user interactive / eeprom
-	ctx.settings.mode = 1;
+	ctx.settings.mode = 2;
+	ctx.settings.maxCtrlWatts = 75000;
 	ctx.settings.maxWatts = 75000;
-	ctx.settings.tcrValue = 0.0045;
+	ctx.settings.minTemp = 60;
+	ctx.settings.maxTemp = 300;
+	ctx.settings.tcrValue = 0.00098;
 
-	ctx.settings.flip = 0;
-	ctx.settings.stealth = 0;
-	ctx.settings.lock = 0;
-	ctx.settings.timeout = 60;
+	ctx.settings.tT = 120;
+	ctx.settings.tW = 56000;
+
+	ctx.settings.lockRes = false;
+	ctx.settings.flip = false;
+	ctx.settings.stealth = false;
+	ctx.settings.lock = false;
+	ctx.settings.timeout = 10;
 
 	// init timers
 	uint8_t timer;
 	timer = Timer_CreateTimer(1, 1, incrementTime, 1);
+
+	// init atomizer
+	Atomizer_SetErrorLock(true);
 
 	// main loop, rest is event handling
 	while(1) {
 		// collect runtime data
 		collectData();
 
+		// set operation settings
+		doFireSet();
+
 		// do controls
 		doControls();
 
-		if(!ctx.state.firing) {
+		if(ctx.state.firing) {
+			displayFiring();
+		} else {
 			displayIdle();
 		}
 	}
@@ -60,11 +67,11 @@ int main() {
 	return 0;
 }
 
+// Collect runtime data.
 void collectData() {
-	// state 
-	ctx.state.firing = 0;
-
-	// update firing
+	// state
+	ctx.state.firing = Atomizer_IsOn();
+	ctx.state.error = Atomizer_GetError();
 
 	// atomizer
 	Atomizer_ReadInfo(&ctx.atomizer);
@@ -74,21 +81,32 @@ void collectData() {
 
 	// coil
 	ctx.coil.temp = readCoilTemp(ctx);
-	if(!ctx.settings.lockRes) {
+	if(!ctx.settings.lockRes)
 		ctx.coil.baseRes = ctx.atomizer.baseResistance;
-	}
 
 	// battery
 	ctx.battery.volts = Battery_GetVoltage();
-	ctx.battery.percent = Battery_VoltageToPercent(ctx.battery.volts);
-	if(ctx.state.firing) {
+
+	if(!ctx.state.firing)
+		ctx.battery.percent = Battery_VoltageToPercent(ctx.battery.volts);
+	
+	if(ctx.state.firing)
 		ctx.battery.loadVolts = ctx.battery.volts;
-	}
 
 	// settings
-	ctx.settings.maxWatts = (ctx.battery.percent * 1000);
+	ctx.settings.maxWatts = (ctx.battery.percent * 900);
+
+	// calculate bypass watts with : p = (e^2 / r)
+	if(ctx.battery.loadVolts != 0) {
+		ctx.settings.bW = ctx.battery.loadVolts * ctx.battery.loadVolts;
+		ctx.settings.bW /= ctx.atomizer.resistance;
+	} else {
+		ctx.settings.bW = ctx.battery.volts * ctx.battery.volts;
+		ctx.settings.bW /= ctx.atomizer.resistance;
+	}
 }
 
+// Callback; increments timers every second
 void incrementTime() {
 	if(!ctx.state.firing) {
 		ctx.state.fireTimer = 0;
@@ -100,6 +118,7 @@ void incrementTime() {
 	}
 }
 
+// Engage sleep mode
 void sleep() {
 	// engage sleep mode
 }

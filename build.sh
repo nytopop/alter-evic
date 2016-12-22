@@ -5,8 +5,9 @@ echo "SDK is at: $EVICSDK"
 
 cd lib/evic-sdk
 make clean
-make
+make evic-rel
+#make
 
 cd ../..
 make clean
-make
+make evic-rel

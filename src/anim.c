@@ -4,6 +4,7 @@
 #include "anim.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <M451Series.h>
 #include <Display.h>
 #include <Font.h>
@@ -21,17 +22,15 @@ void displayIdle() {
 			return;
 		case 1: // vw
 			snprintf(mode_buf, sizeof(mode_buf), "%s", "vw");
-			snprintf(out_buf, sizeof(out_buf), "%dw", ctx.settings.tW);
+			snprintf(out_buf, sizeof(out_buf), "%dw", ctx.settings.tW/1000);
 			break;
 		case 2: // bp
 			snprintf(mode_buf, sizeof(mode_buf), "%s", "bp");
-			snprintf(out_buf, sizeof(out_buf), "%dw", ctx.battery.loadVolts);
+			snprintf(out_buf, sizeof(out_buf), "%dw", ctx.settings.bW/1000);
 			break;
 		case 3: // tc
 			snprintf(mode_buf, sizeof(mode_buf), "%s", "tc");
 			snprintf(out_buf, sizeof(out_buf), "%dc", ctx.settings.tT);
-			break;
-		default:
 			break;
 	}
 

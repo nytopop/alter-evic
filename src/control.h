@@ -2,6 +2,8 @@
 #define CONTROL_H
 
 void doControls();
-void fireCallback(uint8_t state);
+void controlLeft();
+void controlRight();
+void controlFire();
 
 #endif
