@@ -27,16 +27,21 @@ void doControls() {
 			controlFire();
 			break;
 		case 0x02: // right
+			Atomizer_Control(0);
 			controlRight();
 			break;
 		case 0x03: // fire + right
+			Atomizer_Control(0);
 			break;
 		case 0x04: // left
+			Atomizer_Control(0);
 			controlLeft();
 			break;
 		case 0x05: // fire + left
+			Atomizer_Control(0);
 			break;
 		case 0x06: // left + right
+			Atomizer_Control(0);
 			// switch modes
 			if(ctx.settings.mode == 3) {
 				ctx.settings.mode = 0;
@@ -46,6 +51,7 @@ void doControls() {
 			Timer_DelayMs(300);
 			break;
 		case 0x07: // left + right + fire
+			Atomizer_Control(0);
 			break;
 	}
 

@@ -60,7 +60,20 @@ int main() {
 		if(ctx.state.firing) {
 			displayFiring();
 		} else {
-			displayIdle();
+			switch(ctx.settings.mode) {
+				case 0: // settings
+					displaySettings();
+					break;
+				case 1: // vw
+					displayVW();
+					break;
+				case 2: // bp
+					displayBP();
+					break;
+				case 3: // tc
+					displayTC();
+					break;
+			}
 		}
 	}
 
@@ -108,13 +121,13 @@ void collectData() {
 
 // Callback; increments timers every second
 void incrementTime() {
-	if(!ctx.state.firing) {
-		ctx.state.fireTimer = 0;
-		ctx.state.idleTimer += 1;
-	} else {
+	if(ctx.state.firing) {
 		ctx.state.idleTimer = 0;
 		ctx.state.fireTimer += 1;
 		ctx.state.fireTotal += 1;
+	} else {
+		ctx.state.fireTimer = 0;
+		ctx.state.idleTimer += 1;
 	}
 }
 

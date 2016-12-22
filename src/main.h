@@ -27,10 +27,10 @@ struct State {
 	bool firing;
 	Atomizer_Error_t error;
 	// something rtc?; unixtime!
-	uint16_t fireTimer;
-	uint16_t idleTimer;
-	uint32_t fireTotal;
-	uint32_t puffTotal;
+	int fireTimer;
+	int idleTimer;
+	int fireTotal;
+	int puffTotal;
 };
 
 struct Device {

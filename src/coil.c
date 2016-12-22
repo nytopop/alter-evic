@@ -39,7 +39,10 @@ int checkFire() {
 	// check if atomizer reports no errors
 	// check if v isn't too high for regulator
 	// check if w isn't over limit
-	// check if firetimer isn't too high
+
+	// check if firetimer isn't too high TODO : this needs a reset switch
+	if(ctx.state.fireTimer > 10)
+		return 0;
 	// modulate power if battery is low, map so it ramps smoothly
 	return 1;
 }
