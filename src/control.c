@@ -24,23 +24,29 @@ void doControls() {
 			Atomizer_Control(0);
 			break;
 		case 0x01: // fire
+			ctx.state.idleTimer = 0;
 			controlFire();
 			break;
 		case 0x02: // right
+			ctx.state.idleTimer = 0;
 			Atomizer_Control(0);
 			controlRight();
 			break;
 		case 0x03: // fire + right
+			ctx.state.idleTimer = 0;
 			Atomizer_Control(0);
 			break;
 		case 0x04: // left
+			ctx.state.idleTimer = 0;
 			Atomizer_Control(0);
 			controlLeft();
 			break;
 		case 0x05: // fire + left
+			ctx.state.idleTimer = 0;
 			Atomizer_Control(0);
 			break;
 		case 0x06: // left + right
+			ctx.state.idleTimer = 0;
 			Atomizer_Control(0);
 			// switch modes
 			if(ctx.settings.mode == 3) {
@@ -51,6 +57,7 @@ void doControls() {
 			Timer_DelayMs(300);
 			break;
 		case 0x07: // left + right + fire
+			ctx.state.idleTimer = 0;
 			Atomizer_Control(0);
 			break;
 	}

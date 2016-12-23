@@ -53,13 +53,16 @@ int wattsToVolts(int watts) {
 
 float readCoilTemp() {
 	float result;
+
 	result = ctx.atomizer.resistance - ctx.coil.baseRes;
 	result = result / (ctx.coil.baseRes * ctx.settings.tcrValue);
+	result += 20;
 
 	return result;
 }
 
-int calcPID(int temp) {
+// returns voltage from PID controller for target temp
+int wattsPID(int temp) {
 	return temp;
 }
 

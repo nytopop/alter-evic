@@ -5,7 +5,7 @@ void doFireSet();
 int checkFire();
 int wattsToVolts(int watts);
 float readCoilTemp();
-int calcPID(int temp);
+int wattsPID(int temp);
 void fire();
 
 #endif

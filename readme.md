@@ -2,15 +2,15 @@
 
 ## features
 
-- [] Variable Wattage mode
-- [] Bypass / Mech mode
-- [] Temp Control mode
-- [] Sleep mode
+- [x] Variable Wattage mode
+- [x] Bypass / Mech mode
+- [ ] Temp Control mode
+- [x] Sleep mode
 
-- [] Time release firing
-- [] Coil resistance locking
-- [] Display flip
-- [] Idle screen graphic
-- [] Battery indicator
-- [] Puff / Time counter
-- [] TCR curves
+- [ ] Time release firing
+- [ ] Coil resistance locking
+- [ ] Display flip
+- [x] Idle screen graphic
+- [x] Battery indicator
+- [x] Puff / Time counter
+- [ ] TCR curves

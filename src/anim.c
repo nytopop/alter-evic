@@ -13,6 +13,12 @@
 extern volatile Context ctx;
 
 void displayFiring() {
+	char temp_buf[12];
+	char out_buf[5];
+	snprintf(temp_buf, sizeof(temp_buf), "%dc", ctx.coil.temp);
+	snprintf(out_buf, sizeof(out_buf), "%dw",
+			(ctx.atomizer.voltage * ctx.atomizer.current) / 1000000);
+
 	Display_Clear();
 
 	int lines;
@@ -22,6 +28,8 @@ void displayFiring() {
 	}
 
 	Display_PutPixels(0, 112, bitmapLine, bitmapLineWidth, bitmapLineHeight);
+	Display_PutText(0, 116, temp_buf, FONT_DEJAVU_8PT);
+	Display_PutText(32, 116, out_buf, FONT_DEJAVU_8PT);
 	Display_Update();
 }
 
@@ -42,7 +50,6 @@ void displaySettings() {
 
 	Display_Clear();
 	Display_PutText(0, 0, mode_buf, FONT_DEJAVU_8PT);
-	//Display_PutPixels(0, 112, bitmapLine, bitmapLineWidth, bitmapLineHeight);
 	Display_Update();
 }
 
@@ -56,6 +63,7 @@ void displayVW() {
 	snprintf(bat_buf, sizeof(bat_buf), "%d%%", ctx.battery.percent);
 	
 	Display_Clear();
+	Display_PutPixels(4, 2, bitmapBottle, bitmapBottleWidth, bitmapBottleHeight);
 	Display_PutText(24, 0, mode_buf, FONT_DEJAVU_8PT);
 	Display_PutPixels(0, 112, bitmapLine, bitmapLineWidth, bitmapLineHeight);
 	Display_PutText(0, 116, out_buf, FONT_DEJAVU_8PT);
@@ -72,6 +80,8 @@ void displayBP() {
 	snprintf(bat_buf, sizeof(bat_buf), "%d%%", ctx.battery.percent);
 	
 	Display_Clear();
+	Display_PutPixels(4, 2, bitmapBottle, bitmapBottleWidth, bitmapBottleHeight);
+
 	Display_PutText(24, 0, mode_buf, FONT_DEJAVU_8PT);
 	Display_PutPixels(0, 112, bitmapLine, bitmapLineWidth, bitmapLineHeight);
 	Display_PutText(0, 116, out_buf, FONT_DEJAVU_8PT);
@@ -88,6 +98,7 @@ void displayTC() {
 	snprintf(bat_buf, sizeof(bat_buf), "%d%%", ctx.battery.percent);
 	
 	Display_Clear();
+	Display_PutPixels(4, 2, bitmapBottle, bitmapBottleWidth, bitmapBottleHeight);
 	Display_PutText(24, 0, mode_buf, FONT_DEJAVU_8PT);
 	Display_PutPixels(0, 112, bitmapLine, bitmapLineWidth, bitmapLineHeight);
 	Display_PutText(0, 116, out_buf, FONT_DEJAVU_8PT);

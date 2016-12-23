@@ -12,6 +12,8 @@
 #include <Button.h>
 #include <TimerUtils.h>
 #include <Battery.h>
+#include <System.h>
+#include <Display.h>
 
 #define FIRE 0
 #define RIGHT 1
@@ -60,19 +62,26 @@ int main() {
 		if(ctx.state.firing) {
 			displayFiring();
 		} else {
-			switch(ctx.settings.mode) {
-				case 0: // settings
-					displaySettings();
-					break;
-				case 1: // vw
-					displayVW();
-					break;
-				case 2: // bp
-					displayBP();
-					break;
-				case 3: // tc
-					displayTC();
-					break;
+			if(ctx.state.idleTimer < 20) {
+				switch(ctx.settings.mode) {
+					case 0: // settings
+						displaySettings();
+						break;
+					case 1: // vw
+						displayVW();
+						break;
+					case 2: // bp
+						displayBP();
+						break;
+					case 3: // tc
+						displayTC();
+						break;
+				}
+			} else {
+				// switch to low power mode
+				Display_Clear();
+				Display_Update();
+				sleep();
 			}
 		}
 	}
@@ -93,7 +102,7 @@ void collectData() {
 	ctx.device.temp = Atomizer_ReadBoardTemp();
 
 	// coil
-	ctx.coil.temp = readCoilTemp(ctx);
+	ctx.coil.temp = readCoilTemp();
 	if(!ctx.settings.lockRes)
 		ctx.coil.baseRes = ctx.atomizer.baseResistance;
 
@@ -133,5 +142,6 @@ void incrementTime() {
 
 // Engage sleep mode
 void sleep() {
-	// engage sleep mode
+	Sys_SetWakeupSource(0x0f);
+	Sys_Sleep();
 }
