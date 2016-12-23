@@ -45,11 +45,14 @@ int numLines() {
 
 void displaySettings() {
 	char mode_buf[9];
+	char res_buf[22];
 	
 	snprintf(mode_buf, sizeof(mode_buf), "%s", "settings");
+	snprintf(res_buf, sizeof(res_buf), "%d %d", ctx.atomizer.baseResistance, ctx.atomizer.resistance);
 
 	Display_Clear();
 	Display_PutText(0, 0, mode_buf, FONT_DEJAVU_8PT);
+	Display_PutText(0, 10, res_buf, FONT_DEJAVU_8PT);
 	Display_Update();
 }
 

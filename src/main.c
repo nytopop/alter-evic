@@ -53,9 +53,6 @@ int main() {
 		// collect runtime data
 		collectData();
 
-		// set operation settings
-		doFireSet();
-
 		// do controls
 		doControls();
 

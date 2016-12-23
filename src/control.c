@@ -5,11 +5,14 @@
 #include "coil.h"
 
 #include <stdlib.h>
+#include <math.h>
+
 #include <M451Series.h>
 #include <Display.h>
 #include <Font.h>
 #include <Button.h>
 #include <TimerUtils.h>
+#include <Atomizer.h>
 
 extern volatile Context ctx;
 
@@ -99,16 +102,31 @@ void controlRight() {
 }
 
 void controlFire() {
+	int outV, outW;
+
 	switch(ctx.settings.mode) {
 		case 0: // settings
+			//outV = 0;
+			//Atomizer_SetOutputVoltage(outV);
 			break;
 		case 1: // vw
+			outW = ctx.settings.tW;
+			if(outW > ctx.settings.maxWatts)
+				outW = ctx.settings.maxWatts;
+			outV = (int)sqrt(outW * ctx.atomizer.resistance);
+			Atomizer_SetOutputVoltage(outV);
 			fire();
 			break;
 		case 2: // bp
+			outV = ctx.battery.volts;
+			Atomizer_SetOutputVoltage(outV);
 			fire();
 			break;
 		case 3: // tc
+			outW = wattsPID();
+			outV = (int)sqrt(outW * ctx.atomizer.resistance);
+			Atomizer_SetOutputVoltage(outV);
+			fire();
 			break;
 	}
 }
