@@ -24,6 +24,9 @@ void doControls() {
 	// switch on button state
 	switch(state) {
 		case 0x00: // none
+			ctx.coil.pTerm = 0;
+			ctx.coil.iTerm = 0;
+			ctx.coil.dTerm = 0;
 			Atomizer_Control(0);
 			break;
 		case 0x01: // fire
@@ -123,8 +126,15 @@ void controlFire() {
 			fire();
 			break;
 		case 3: // tc
-			outW = wattsPID();
-			outV = (int)sqrt(outW * ctx.atomizer.resistance);
+			// Do outV directly from the PID controller
+			//
+			//outW = newPID();
+			//outV = (int)sqrt(outW * ctx.atomizer.resistance);
+			outV = newPID();
+			outW = outV * outV;
+			outW /= ctx.atomizer.resistance;
+			if(outW > ctx.settings.maxWatts)
+				outV = (int)sqrt(ctx.settings.maxWatts * ctx.atomizer.resistance);
 			Atomizer_SetOutputVoltage(outV);
 			fire();
 			break;

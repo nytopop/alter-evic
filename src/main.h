@@ -4,6 +4,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#define FPS 24
+
 struct Settings {
 	int mode; // 0:settings, 1:variable wattage, 2:bypass, 3:temp control
 	int maxCtrlWatts;
@@ -38,8 +40,15 @@ struct Device {
 };
 
 struct Coil {
-	int baseRes;	
+	int baseRes;
 	int temp;
+	float pTerm;
+	float iTerm;
+	float dTerm;
+	float p;
+	float i;
+	float d;
+	float out;
 };
 
 struct Battery {
@@ -59,6 +68,7 @@ typedef struct {
 } Context;
 
 void collectData();
+void readyLoop();
 void incrementTime();
 void sleep();
 

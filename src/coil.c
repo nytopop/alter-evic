@@ -2,6 +2,7 @@
 
 #include "main.h"
 #include "coil.h"
+#include <Atomizer.h>
 
 extern volatile Context ctx;
 
@@ -15,48 +16,53 @@ float readCoilTemp() {
 	return result;
 }
 
-// returns wattage from PID controller for target temp
-int wattsPID() {
-	static float oldTemp, iTerm;
-	float deltaError, error, output;
-	int min, max;
-	int kp, ki, kd;
+int newPID() {
+	float kp, ki, kd;
+	float p, i, d;
+	float err, dt, out;
+	int min, max, outV;
+	
+	min = ATOMIZER_VOLTAGE_MIN;
+	max = ATOMIZER_VOLTAGE_MAX;
+	//max = ctx.settings.maxWatts / 100;
+	//min = 0;
+	//max = 750;
+	kp = 32;
+	ki = 0.4;
+	kd = 24;
 
-	// constants
-	min = 1;
-	max = ctx.settings.maxWatts;
-	kp = 64;
-	ki = 16;
-	kd = 1;
+	// Proportional
+	err = ctx.settings.tT - ctx.coil.temp;
 
-	// P term
-	error = ctx.settings.tT - ctx.coil.temp;
+	// Integral and Windup Eliminator
+	ctx.coil.iTerm += err;
+	if((int)ctx.coil.iTerm > max)
+		ctx.coil.iTerm = max;
+	if ((int)ctx.coil.iTerm < min)
+		ctx.coil.iTerm = min;
 
-	// I term
-	iTerm += ki * error;
-	// integrator windup eliminator
-	if(iTerm > max) {
-		iTerm = max;
-	} else if(iTerm < min) {
-		iTerm = min;
-	}
+	// Derivative and timing
+	ctx.coil.dTerm = err - ctx.coil.pTerm;
+	ctx.coil.pTerm = err;
+	dt = 100 / FPS;
 
-	// D term
-	deltaError = ctx.coil.temp - oldTemp;
+	// PID
+	p = kp * err;
+	i = ki * ctx.coil.iTerm * dt;
+	d = kd * ctx.coil.dTerm / dt;
+	ctx.coil.p = p;
+	ctx.coil.i = i;
+	ctx.coil.d = d;
 
-	//           P            I           D
-	output = (kp * error) + iTerm - (kd * deltaError);
+	out = p + i + d;
+	ctx.coil.out = out;
+	if((int)out > max)
+		out = max;
+	if((int)out < min)
+		out = min;
 
-	// clamp output to min/max
-	if(output > max) {
-		output = max;
-	} else if(output < min) {
-		output = min;
-	}
-
-	oldTemp = ctx.coil.temp;
-
-	return (int)output;
+	outV = (int)out;
+	return outV;
 }
 
 // actually fire the coil at current settings, use checkFire()

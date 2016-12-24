@@ -15,24 +15,20 @@
 #include <System.h>
 #include <Display.h>
 
-#define FIRE 0
-#define RIGHT 1
-#define LEFT 2
-#define FPS 30
-
 volatile Context ctx;
+volatile uint8_t loop;
 
 // Main
 int main() {
 	// initial settings, will change to user interactive / eeprom
-	ctx.settings.mode = 2;
+	ctx.settings.mode = 3;
 	ctx.settings.maxCtrlWatts = 75000;
 	ctx.settings.maxWatts = 75000;
 	ctx.settings.minTemp = 60;
 	ctx.settings.maxTemp = 300;
 	ctx.settings.tcrValue = 0.00098;
 
-	ctx.settings.tT = 120;
+	ctx.settings.tT = 160;
 	ctx.settings.tW = 56000;
 
 	ctx.settings.lockRes = false;
@@ -42,14 +38,17 @@ int main() {
 	ctx.settings.timeout = 10;
 
 	// init timers
-	uint8_t timer;
-	timer = Timer_CreateTimer(1, 1, incrementTime, 1);
+	uint8_t timeTimer;
+	timeTimer = Timer_CreateTimer(1, 1, incrementTime, 1);
+	uint8_t loopTimer;
+	loopTimer = Timer_CreateTimer(FPS, 1, readyLoop, 1);
 
 	// init atomizer
 	Atomizer_SetErrorLock(true);
 
 	// main loop, rest is event handling
 	while(1) {
+		loop = 0;
 		// collect runtime data
 		collectData();
 
@@ -81,6 +80,9 @@ int main() {
 				sleep();
 			}
 		}
+
+		// waste time until loop refresh timer is ready
+		while(loop == 0) {}
 	}
 
 	return 0;
@@ -102,6 +104,7 @@ void collectData() {
 	ctx.coil.temp = readCoilTemp();
 	if(!ctx.settings.lockRes)
 		ctx.coil.baseRes = ctx.atomizer.baseResistance;
+		//ctx.coil.baseRes = 160;
 
 	// battery
 	ctx.battery.volts = Battery_GetVoltage();
@@ -123,6 +126,11 @@ void collectData() {
 		ctx.settings.bW = ctx.battery.volts * ctx.battery.volts;
 		ctx.settings.bW /= ctx.atomizer.resistance;
 	}
+}
+
+// Callback; 
+void readyLoop() {
+	loop = 1;
 }
 
 // Callback; increments timers every second
