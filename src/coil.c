@@ -3,6 +3,7 @@
 #include "main.h"
 #include "coil.h"
 #include <Atomizer.h>
+#include <math.h>
 
 extern volatile Context ctx;
 
@@ -16,52 +17,57 @@ float readCoilTemp() {
 	return result;
 }
 
-int newPID() {
-	float kp, ki, kd;
+int voltsPID() {
+	//float kp, ki, kd;
 	float p, i, d;
-	float err, dt, out;
+	float err, out;
 	int min, max, outV;
-	
-	min = ATOMIZER_VOLTAGE_MIN;
-	max = ATOMIZER_VOLTAGE_MAX;
-	//max = ctx.settings.maxWatts / 100;
-	//min = 0;
-	//max = 750;
-	kp = 32;
-	ki = 0.4;
-	kd = 24;
 
-	// Proportional
+	// compute min and max from maxwatts
+	// V = sqrt(p*r)
+	max = (int)sqrt(ctx.settings.maxWatts * ctx.atomizer.resistance);
+	min = ATOMIZER_VOLTAGE_MIN;
+	//max = ATOMIZER_VOLTAGE_MAX;
+	
+	// Gain constants
+	const float kp = 64;
+	const float ki = 0.4;
+	const float kd = 32;
+	const float dt = 100 / FPS;
+
+	// Proportional term
 	err = ctx.settings.tT - ctx.coil.temp;
 
-	// Integral and Windup Eliminator
+	// Integral term and Windup Eliminator
 	ctx.coil.iTerm += err;
 	if((int)ctx.coil.iTerm > max)
 		ctx.coil.iTerm = max;
 	if ((int)ctx.coil.iTerm < min)
 		ctx.coil.iTerm = min;
 
-	// Derivative and timing
+	// Derivative term
 	ctx.coil.dTerm = err - ctx.coil.pTerm;
 	ctx.coil.pTerm = err;
-	dt = 100 / FPS;
-
-	// PID
+	
+	// Calculate as [p = kp * (setTemp - currentTemp)]
 	p = kp * err;
+	// Calculate as [i = ki * (∑ error) * interval]
 	i = ki * ctx.coil.iTerm * dt;
+	// Calculate as [d = kd * (currentError - lastError) / interval]
 	d = kd * ctx.coil.dTerm / dt;
-	ctx.coil.p = p;
-	ctx.coil.i = i;
-	ctx.coil.d = d;
 
+	// Output term and clamping
 	out = p + i + d;
-	ctx.coil.out = out;
 	if((int)out > max)
 		out = max;
 	if((int)out < min)
 		out = min;
 
+	// Dry fire protect, if temp is 8 deg or more over setpoint, disable output
+	if (err < -8)
+		out = min;
 	outV = (int)out;
+
 	return outV;
 }
 

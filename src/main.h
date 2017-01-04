@@ -45,10 +45,6 @@ struct Coil {
 	float pTerm;
 	float iTerm;
 	float dTerm;
-	float p;
-	float i;
-	float d;
-	float out;
 };
 
 struct Battery {

@@ -21,14 +21,14 @@ void displayFiring() {
 
 
 	// PID
-	char p_buf[32];
+	/*char p_buf[32];
 	char i_buf[32];
 	char d_buf[32];
 	char o_buf[32];
 	snprintf(p_buf, sizeof(p_buf), "%f", ctx.coil.p);
 	snprintf(i_buf, sizeof(i_buf), "%f", ctx.coil.i);
 	snprintf(d_buf, sizeof(d_buf), "%f", ctx.coil.d);
-	snprintf(o_buf, sizeof(o_buf), "%f", ctx.coil.out);
+	snprintf(o_buf, sizeof(o_buf), "%f", ctx.coil.out);*/
 
 	Display_Clear();
 
@@ -38,10 +38,10 @@ void displayFiring() {
 		Display_PutPixels(0, i, bitmapLine, bitmapLineWidth, bitmapLineHeight);
 	}
 
-	Display_PutText(0, 70, p_buf, FONT_DEJAVU_8PT);
+	/*Display_PutText(0, 70, p_buf, FONT_DEJAVU_8PT);
 	Display_PutText(0, 80, i_buf, FONT_DEJAVU_8PT);
 	Display_PutText(0, 90, d_buf, FONT_DEJAVU_8PT);
-	Display_PutText(0, 100, o_buf, FONT_DEJAVU_8PT);
+	Display_PutText(0, 100, o_buf, FONT_DEJAVU_8PT);*/
 
 	Display_PutPixels(0, 112, bitmapLine, bitmapLineWidth, bitmapLineHeight);
 	Display_PutText(0, 116, temp_buf, FONT_DEJAVU_8PT);

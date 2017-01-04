@@ -2,8 +2,7 @@
 #define COIL_H
 
 float readCoilTemp();
-int newPID();
-//int wattsPID();
+int voltsPID();
 void fire();
 int checkFire();
 

@@ -126,15 +126,14 @@ void controlFire() {
 			fire();
 			break;
 		case 3: // tc
-			// Do outV directly from the PID controller
-			//
-			//outW = newPID();
-			//outV = (int)sqrt(outW * ctx.atomizer.resistance);
-			outV = newPID();
-			outW = outV * outV;
-			outW /= ctx.atomizer.resistance;
-			if(outW > ctx.settings.maxWatts)
-				outV = (int)sqrt(ctx.settings.maxWatts * ctx.atomizer.resistance);
+			// Unneccessary I think, we clamp max watts at PID loop
+			//outV = voltsPID();
+			//outW = outV * outV;
+			//outW /= ctx.atomizer.resistance;
+			//if(outW > ctx.settings.maxWatts)
+			//	outV = (int)sqrt(ctx.settings.maxWatts * ctx.atomizer.resistance);
+			//	Get output voltage from PID controller, fire
+			outV = voltsPID();
 			Atomizer_SetOutputVoltage(outV);
 			fire();
 			break;
