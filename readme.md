@@ -4,7 +4,7 @@
 
 - [x] Variable Wattage mode
 - [x] Bypass / Mech mode
-- [ ] Temp Control mode
+- [x] Temp Control mode
 - [x] Sleep mode
 
 - [ ] Time release firing

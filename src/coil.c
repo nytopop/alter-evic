@@ -18,20 +18,17 @@ float readCoilTemp() {
 }
 
 int voltsPID() {
-	//float kp, ki, kd;
 	float p, i, d;
 	float err, out;
 	int min, max, outV;
 
 	// compute min and max from maxwatts
-	// V = sqrt(p*r)
 	max = (int)sqrt(ctx.settings.maxWatts * ctx.atomizer.resistance);
 	min = ATOMIZER_VOLTAGE_MIN;
-	//max = ATOMIZER_VOLTAGE_MAX;
 	
 	// Gain constants
 	const float kp = 64;
-	const float ki = 0.4;
+	const float ki = 1;
 	const float kd = 32;
 	const float dt = 100 / FPS;
 
@@ -63,9 +60,11 @@ int voltsPID() {
 	if((int)out < min)
 		out = min;
 
-	// Dry fire protect, if temp is 8 deg or more over setpoint, disable output
-	if (err < -8)
+	// Overtemp Protection
+	if (err < -5) {
 		out = min;
+		ctx.coil.iTerm -= 250;
+	}
 	outV = (int)out;
 
 	return outV;
