@@ -12,16 +12,19 @@ struct Settings {
 	int maxWatts; // batPercent * 900 [100%:90w, 50%:45w]
 	int minTemp;
 	int maxTemp;
-	float tcrValue;
+	float tcrValue; // TODO
 
 	int tT; // target temperature
 	int tW; // target wattage
 	int bW; // bypass wattage
 
-	bool lockRes;
-	bool flip;
-	bool stealth;
-	bool lock;
+	int setPos; // menu position
+
+
+	bool lockRes; // TODO
+	bool flip; // TODO
+	bool stealth; // TODO
+	bool lock; // TODO
 	int timeout;
 };
 
@@ -62,6 +65,14 @@ typedef struct {
 	struct Coil coil;
 	struct Battery battery;
 } Context;
+
+typedef struct {
+	bool flipDisplay;
+	bool lockResistance;
+	bool stealthMode;
+	bool lockButtons;
+	float tcrValue;
+} FlashSettings;
 
 void collectData();
 void readyLoop();

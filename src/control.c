@@ -15,6 +15,7 @@
 #include <Atomizer.h>
 
 extern volatile Context ctx;
+int pressed;
 
 // read all control inputs and do an action
 void doControls() {
@@ -24,6 +25,7 @@ void doControls() {
 	// switch on button state
 	switch(state) {
 		case 0x00: // none
+			pressed = 0;
 			ctx.coil.pTerm = 0;
 			ctx.coil.iTerm = 0;
 			ctx.coil.dTerm = 0;
@@ -73,6 +75,7 @@ void doControls() {
 void controlLeft() {
 	switch(ctx.settings.mode) {
 		case 0: // settings
+			settingsLeft();
 			break;
 		case 1: // vw
 			if(ctx.settings.tW > 0)
@@ -90,6 +93,7 @@ void controlLeft() {
 void controlRight() {
 	switch(ctx.settings.mode) {
 		case 0: // settings
+			settingsRight();
 			break;
 		case 1: // vw
 			if(ctx.settings.tW < ctx.settings.maxCtrlWatts)
@@ -109,8 +113,14 @@ void controlFire() {
 
 	switch(ctx.settings.mode) {
 		case 0: // settings
-			//outV = 0;
-			//Atomizer_SetOutputVoltage(outV);
+			if(pressed == 0) {
+				pressed = 1;
+				if (ctx.settings.setPos < 9) {
+					ctx.settings.setPos += 1;
+				} else {
+					ctx.settings.setPos = 0;
+				}
+			}
 			break;
 		case 1: // vw
 			outW = ctx.settings.tW;
@@ -126,16 +136,35 @@ void controlFire() {
 			fire();
 			break;
 		case 3: // tc
-			// Unneccessary I think, we clamp max watts at PID loop
-			//outV = voltsPID();
-			//outW = outV * outV;
-			//outW /= ctx.atomizer.resistance;
-			//if(outW > ctx.settings.maxWatts)
-			//	outV = (int)sqrt(ctx.settings.maxWatts * ctx.atomizer.resistance);
-			//	Get output voltage from PID controller, fire
 			outV = voltsPID();
 			Atomizer_SetOutputVoltage(outV);
 			fire();
+			break;
+	}
+}
+
+void settingsLeft() {
+	switch(ctx.settings.setPos) {
+		case 0:
+			break;
+		case 1: // TCR
+			if(ctx.settings.tcrValue > 0)
+				ctx.settings.tcrValue -= 0.00001;
+			break;
+		default:
+			break;
+	}
+}
+
+void settingsRight() {
+	switch(ctx.settings.setPos) {
+		case 0:
+			break;
+		case 1: // TCR
+			if(ctx.settings.tcrValue < 0.00999)
+				ctx.settings.tcrValue += 0.00001;
+			break;
+		default:
 			break;
 	}
 }

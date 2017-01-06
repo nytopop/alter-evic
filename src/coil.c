@@ -28,7 +28,7 @@ int voltsPID() {
 	
 	// Gain constants
 	const float kp = 64;
-	const float ki = 1;
+	const float ki = 0.8;
 	const float kd = 32;
 	const float dt = 100 / FPS;
 
@@ -61,8 +61,11 @@ int voltsPID() {
 		out = min;
 
 	// Overtemp Protection
-	if (err < -5) {
+	if (err < -12) {
 		out = min;
+		ctx.coil.iTerm -= 500;
+	} else if (err < -7) {
+		out /= 2;
 		ctx.coil.iTerm -= 250;
 	}
 	outV = (int)out;
