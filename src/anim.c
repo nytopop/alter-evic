@@ -15,7 +15,7 @@ extern volatile Context ctx;
 void displayFiring() {
 	char temp_buf[12];
 	char out_buf[5];
-	snprintf(temp_buf, sizeof(temp_buf), "%dc", ctx.coil.temp);
+	snprintf(temp_buf, sizeof(temp_buf), "%dc", (int)ctx.coil.temp);
 	snprintf(out_buf, sizeof(out_buf), "%dw",
 			(ctx.atomizer.voltage * ctx.atomizer.current) / 1000000);
 
@@ -61,15 +61,17 @@ void displaySettings() {
 	char item3[32];
 	char item4[32];
 
-	float tcr = ctx.settings.tcrValue * 100000;
+	double tcr = ctx.settings.tcrValue * 100000;
 	int cleanTCR = (int)tcr;
 	snprintf(item1, sizeof(item1), "%s: %d", "TCR", cleanTCR);
+	snprintf(item2, sizeof(item2), "%d", ctx.atomizer.resistance);
 
 	int pos = ctx.settings.setPos * 12 + 10;
 
 	Display_Clear();
 	Display_PutText(0, 0, mode_buf, FONT_DEJAVU_8PT);
 	Display_PutText(0, 12, item1, FONT_DEJAVU_8PT);
+	Display_PutText(0, 24, item2, FONT_DEJAVU_8PT);
 	Display_PutPixels(0, pos, bitmapLine, bitmapLineWidth, bitmapLineHeight);
 	Display_Update();
 }

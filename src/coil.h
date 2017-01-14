@@ -1,7 +1,7 @@
 #ifndef COIL_H
 #define COIL_H
 
-float readCoilTemp();
+double readCoilTemp();
 int voltsPID();
 void fire();
 int checkFire();

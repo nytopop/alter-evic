@@ -4,7 +4,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define FPS 24
+#define FPS 45
 
 struct Settings {
 	int mode; // 0:settings, 1:variable wattage, 2:bypass, 3:temp control
@@ -12,7 +12,7 @@ struct Settings {
 	int maxWatts; // batPercent * 900 [100%:90w, 50%:45w]
 	int minTemp;
 	int maxTemp;
-	float tcrValue; // TODO
+	double tcrValue; // TODO
 
 	int tT; // target temperature
 	int tW; // target wattage
@@ -44,10 +44,10 @@ struct Device {
 
 struct Coil {
 	int baseRes;
-	int temp;
-	float pTerm;
-	float iTerm;
-	float dTerm;
+	double temp;
+	double pTerm;
+	double iTerm;
+	double dTerm;
 };
 
 struct Battery {
@@ -71,7 +71,7 @@ typedef struct {
 	bool lockResistance;
 	bool stealthMode;
 	bool lockButtons;
-	float tcrValue;
+	double tcrValue;
 } FlashSettings;
 
 void collectData();

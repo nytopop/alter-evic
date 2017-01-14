@@ -26,7 +26,7 @@ int main() {
 	ctx.settings.maxWatts = 75000;
 	ctx.settings.minTemp = 60;
 	ctx.settings.maxTemp = 300;
-	ctx.settings.tcrValue = 0.00098;
+	ctx.settings.tcrValue = 0.00092;
 
 	ctx.settings.tT = 248;
 	ctx.settings.tW = 56000;
@@ -102,28 +102,25 @@ void collectData() {
 
 	// coil
 	ctx.coil.temp = readCoilTemp();
+	// TODO lock resistance setting here
 	if(!ctx.settings.lockRes)
-		ctx.coil.baseRes = 384;
+		ctx.coil.baseRes = 377;
 		//ctx.coil.baseRes = ctx.atomizer.baseResistance;
 
 	// battery
 	ctx.battery.volts = Battery_GetVoltage();
-
 	if(!ctx.state.firing)
 		ctx.battery.percent = Battery_VoltageToPercent(ctx.battery.volts);
-	
 	if(ctx.state.firing)
 		ctx.battery.loadVolts = ctx.battery.volts;
 
-	// settings
-//	ctx.settings.maxWatts = (ctx.battery.percent * 900);
+	// calculate max watts as [w = ((bPct / 100) * 50 + 30) * 1000)]
 	float r = (float)ctx.battery.percent / 100;
 	r *= 50;
 	r += 30;
-	int w = (int)r * 1000;
-	ctx.settings.maxWatts = w;
+	ctx.settings.maxWatts = (int)r * 1000;
 
-	// calculate bypass watts with : p = (e^2 / r)
+	// calculate bypass watts as [w = e^2 / r]
 	if(ctx.battery.loadVolts != 0) {
 		ctx.settings.bW = ctx.battery.loadVolts * ctx.battery.loadVolts;
 		ctx.settings.bW /= ctx.atomizer.resistance;

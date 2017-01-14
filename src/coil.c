@@ -7,9 +7,13 @@
 
 extern volatile Context ctx;
 
-float readCoilTemp() {
-	float result;
+double readCoilTemp() {
+	double result;
 
+	/* err = current - base;
+	 * delta = err / (base * tcr);
+	 * temp = delta + baseTemp;
+	 * */
 	result = ctx.atomizer.resistance - ctx.coil.baseRes;
 	result = result / (ctx.coil.baseRes * ctx.settings.tcrValue);
 	result += 20;
@@ -18,22 +22,25 @@ float readCoilTemp() {
 }
 
 int voltsPID() {
-	float p, i, d;
-	float err, out;
+	double p, i, d;
+	double err, out;
 	int min, max, outV;
 
 	// compute min and max from maxwatts
 	max = (int)sqrt(ctx.settings.maxWatts * ctx.atomizer.resistance);
 	min = ATOMIZER_VOLTAGE_MIN;
-	
+
 	// Gain constants
-	const float kp = 64;
-	const float ki = 0.8;
-	const float kd = 32;
-	const float dt = 100 / FPS;
+	const double kp = 48;
+	const double ki = 0.8;
+	const double kd = 32;
+	const double dt = 100 / FPS;
 
 	// Proportional term
 	err = ctx.settings.tT - ctx.coil.temp;
+
+	if(err > 35)
+		return max;
 
 	// Integral term and Windup Eliminator
 	ctx.coil.iTerm += err;
@@ -61,12 +68,10 @@ int voltsPID() {
 		out = min;
 
 	// Overtemp Protection
-	if (err < -12) {
-		out = min;
-		ctx.coil.iTerm -= 500;
-	} else if (err < -7) {
+	if (err < -10) {
 		out /= 2;
-		ctx.coil.iTerm -= 250;
+	} else if (err < -6) {
+		ctx.coil.iTerm -= (ctx.coil.iTerm * 0.08); // 8%
 	}
 	outV = (int)out;
 
