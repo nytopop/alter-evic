@@ -104,8 +104,8 @@ void collectData() {
 	ctx.coil.temp = readCoilTemp();
 	// TODO lock resistance setting here
 	if(!ctx.settings.lockRes)
-		ctx.coil.baseRes = 377;
-		//ctx.coil.baseRes = ctx.atomizer.baseResistance;
+		ctx.coil.baseRes = ctx.atomizer.baseResistance;
+		//ctx.coil.baseRes = 377;
 
 	// battery
 	ctx.battery.volts = Battery_GetVoltage();
@@ -115,6 +115,16 @@ void collectData() {
 		ctx.battery.loadVolts = ctx.battery.volts;
 
 	// calculate max watts as [w = ((bPct / 100) * 50 + 30) * 1000)]
+	// At 50 - 100%, 75W
+	// At 30 - 49%   59W
+	// At 0  - 29%   45W
+	/*if(ctx.battery.percent >= 50) {
+		ctx.settings.maxWatts = 75000;
+	} else if(ctx.battery.percent >= 30) {
+		ctx.settings.maxWatts = 59000;
+	} else {
+		ctx.settings.maxWatts = 45000;
+	}*/
 	float r = (float)ctx.battery.percent / 100;
 	r *= 50;
 	r += 30;
